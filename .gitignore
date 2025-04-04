@@ -1,0 +1,8 @@
+# Ignore the virtual environment
+
+.venv/
+.wslvenv/
+.venvec2/
+.vscode/
+__pycache__/
+*.py[cod]
