@@ -1,0 +1,102 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    text-align: center;
+}
+
+/* Headings */
+h2 {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+
+/* Form styling */
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: block; /* Ensures form takes full width */
+    text-align: left;
+    width: 70%;  /* Increase only width */
+    max-width: 500px;  /* Prevents it from being too wide */
+    margin: auto; /* Centers the form */
+}
+
+/* Style the label */
+label {
+    font-weight: bold;
+    font-size: 16px; /* Increase font size */
+    display: block;  /* Ensures it takes full width */
+    margin-bottom: 5px;  /* Adds space below the label */
+}
+
+/* Add spacing below input fields */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px; /* Increase space below input */
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px; /* Increase input text size */
+}
+
+/* Add space above the submit button */
+.submit-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 5px auto;  /* Adds spacing & centers button */
+}
+
+
+/* Hover effect */
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+
+/* Flash messages */
+.success {
+    color: green;
+    font-weight: bold;
+    font-size: 15px;
+
+}
+
+.warning {
+    color: orange;
+    font-weight: bold;
+    font-size: 150px;
+
+}
+
+.danger {
+    color: red;
+    font-weight: bold;
+    font-size: 15px;
+
+}
+
+/* Display uploaded image */
+img {
+    max-width: 350px;
+    border: 2px solid #ddd;
+    margin-top: 10px;
+}
+
+/* Extracted text */
+.result-text {
+    font-size: 15px;
+    font-weight: regular;
+    color: #007bff; /* Pink color */
+    margin-top: 15px;
+}
