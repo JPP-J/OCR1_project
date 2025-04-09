@@ -9,6 +9,7 @@ matplotlib.use("TkAgg")  # Use an interactive backend
 import matplotlib.pyplot as plt  # For displaying images using matplotlib
 from PIL import Image
 
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'  # use your path here
 
 def image_show(link):
 
