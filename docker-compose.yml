@@ -3,16 +3,12 @@ version: '3.8'
 services:
   web:
     build: .
+    container_name: ocr_web
     ports:
-      - "8000:8000"  # Exposes Flask's port to the host machine
+      - "8000:8000"
     volumes:
       - .:/app
     restart: always
-    networks:
-      - mynetwork
-
-networks:
-  mynetwork:
-    driver: bridge
-
-
+    environment:
+      - FLASK_ENV=ocr_blog.flaskenv
+      - FLASK_APP=ocr_blog.py
