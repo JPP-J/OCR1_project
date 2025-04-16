@@ -1,0 +1,30 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main   # or any branch you use
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH for EC2
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.172.31.88.232 }}                           # Private IPv4 addresses
+
+    - name: Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@18.212.33.159 << 'EOF'         # Public IPv4 address
+          cd ~/OCR1_project
+          git pull origin main
+          source .venv/bin/activate               # activate your virtual environment
+          pip install -r requirements.txt
+          sudo systemctl restart gunicorn         # Restart Gunicorn
+          sudo systemctl restart nginx            # Restart Nginx if needed
+        EOF
