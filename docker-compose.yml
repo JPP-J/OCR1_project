@@ -1,3 +1,11 @@
-docker compose down
-git pull origin main
-docker compose up -d --build
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    restart: always
+
