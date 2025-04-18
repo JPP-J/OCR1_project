@@ -3,9 +3,12 @@
 This repo is home to the code that accompanies Jidapa's *OCR extract text from picture Project* :
 
 
-- **Description**: Usage tessaract for extract text task from link of picture online
+- **Description**: Usage tessaract for extract text task from link of picture online with Flask app and deployed via Docker on AWS EC2 with CI/CD via GitHub Actions.
 - **Libraries Used**:
-  - image processing: opencv-python
-  - Optical Character Recognition (OCR): pytesseract
-  - web development and networking:  flask, flask-ngrok, pyngrok
+  - image processing: `opencv-python`
+  - Optical Character Recognition (OCR): `pytesseract`
+  - web development and networking:  `Flask` + `Gunicorn` + `Nginx` setup
+  - Containers: Dockerized with `docker-compose`
+  - CI/CD: with GitHub Actions
+  - Deployment: on EC2
 - [Hand on code demo OCR Notebook](https://github.com/JPP-J/OCR1_project/blob/07099f1426c312bfff9bc5192a9c85100ddd8a00/example_result.ipynb)
