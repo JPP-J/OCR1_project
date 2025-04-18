@@ -1,0 +1,74 @@
+=========================================================================================
+                         +-------------------------------+
+                         |        GitHub Repository      |
+                         |-------------------------------|
+                         | Source Code + CI/CD Files     |
+                         | (e.g., ci.yml, deploy.yml)    |
+                         +-------------------------------+
+                                     |
+                                     | GitHub Actions (CI/CD)
+                                     v
+                           +-----------------------+
+                           |     AWS EC2 Instance  |
+                           |-----------------------|
+                           | Ubuntu + Docker +     |
+                           | docker-compose        |
+                           +-----------+-----------+
+                                       |
+            docker-compose.yml (Builds full stack from below)
+                                       |
+   +-----------------------------------+--------------------------------+
+   |                                                                       |
+   v                                                                       v
++-------------------+                                       +---------------------+
+|   Flask Web App   | <-------- Gunicorn --------->         |   Nginx (optional)  |
+|-------------------|                                       |---------------------|
+| - /app            |                                       | - Reverse proxy     |
+|   |- __init__.py  |                                       |   to Gunicorn       |
+|   |- routes.py    |                                       | - Static file serve |
+|   |- error.py     |                                       +---------------------+
+|   |- models.py    |
+|   |- config.py    | 
+|   |- forms.py     | 
+|   |- /templates   | --> Jinja2 templates                  (port 80 or 443)
+|   |- /static      | --> CSS / images
++-------------------+                      
+
++--------------------+
+|   /utils           | --> OCR logic (ocr_extract.py)
++--------------------+
+
++--------------------+
+| Dockerfile         | --> Builds image for Flask app
++--------------------+
+| docker-compose.yml | --> Defines Flask + services
++--------------------+
+| deploy.yml         | --> Automates EC2 deployment
+| ci.yml             | --> CI/CD pipelines
++--------------------+
+
+=========================================================================================
+
+⚙️ How it works (Step-by-step)
+
+    Code pushed to GitHub.
+
+    GitHub Actions (ci.yml, deploy.yml) runs test, builds Docker image, deploys to EC2.
+
+    On EC2:
+
+        docker-compose up --build -d starts containers.
+
+        Flask runs with Gunicorn (serving on port 8000 or as defined).
+
+        If Nginx is used, it reverse proxies requests from port 80 to the Flask container.
+
+    App serves pages using:
+
+        /templates/*.html
+
+        /static/*.css
+
+    OCR logic handled in /utils/ocr_extract.py.
+
+    Routes, errors, models all cleanly separated in /app.
