@@ -4,5 +4,6 @@
 .wslvenv/
 .venvec2/
 .vscode/
+etc/
 __pycache__/
 *.py[cod]
