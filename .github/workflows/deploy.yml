@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    needs: build-and-push  # ensures CI completed
     runs-on: ubuntu-latest
 
     steps:
