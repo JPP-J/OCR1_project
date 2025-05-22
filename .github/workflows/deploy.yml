@@ -32,6 +32,11 @@ jobs:
         ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
           cd ~/OCR1_project
           
+          # Debug: Show initial state
+          echo "=== Initial State ==="
+          docker ps -a
+          sudo netstat -tulpn | grep -E ':80|:8000'
+          
           # Clean up disk space
           sudo apt-get clean
           sudo apt-get autoremove -y
@@ -41,10 +46,18 @@ jobs:
           # Stop any existing containers and remove them
           docker-compose down --remove-orphans
           
-          # Check if port 8000 is in use and kill the process if it is
-          if lsof -i :8000; then
-            sudo lsof -i :8000 | grep LISTEN | awk '{print $2}' | xargs -r sudo kill -9
-          fi
+          # More thorough port cleanup
+          echo "=== Cleaning up ports ==="
+          # Kill any process using port 8000
+          sudo fuser -k 8000/tcp || true
+          # Kill any process using port 80
+          sudo fuser -k 80/tcp || true
+          # Wait a moment for ports to be freed
+          sleep 2
+          
+          # Verify ports are free
+          echo "=== Port Status After Cleanup ==="
+          sudo netstat -tulpn | grep -E ':80|:8000' || echo "Ports are free"
           
           # Login to Docker Hub
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -75,14 +88,14 @@ jobs:
           # Test and restart Nginx
           sudo nginx -t && sudo systemctl restart nginx
           
-          # Debug information
-          echo "=== Docker Status ==="
+          # Final debug information
+          echo "=== Final Docker Status ==="
           docker ps -a
           echo "=== Docker Logs ==="
           docker logs ocr_web
           echo "=== Nginx Status ==="
           sudo systemctl status nginx
-          echo "=== Port Status ==="
+          echo "=== Final Port Status ==="
           sudo netstat -tulpn | grep -E ':80|:8000'
           echo "=== Nginx Configuration ==="
           sudo nginx -T
