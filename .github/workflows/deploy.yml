@@ -15,7 +15,7 @@ jobs:
 
     - name: Copy project files to EC2
       run: |
-        rsync -avz -e "ssh -i /home/runner/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
+        rsync -avz -e "ssh -i /home/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
 
     - name: Deploy using Docker Compose on EC2
       env:
