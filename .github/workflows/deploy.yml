@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main   # or any branch you use
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push  # ensures CI completed
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH for EC2
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}                                                # Private IPv4 addresses
+
+    - name: Copy project files to EC2
+      run: |
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
+
+    - name: Deploy using Docker Compose on EC2
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
+          cd ~/OCR1_project
+          IMAGE_TAG=$IMAGE_TAG docker-compose pull
+          IMAGE_TAG=$IMAGE_TAG docker-compose up -d
+        EOF

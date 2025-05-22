@@ -17,5 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy app files
 COPY . /app/
 
+# Expose port your Flask app uses (usually 8000 or 5000)
+EXPOSE 8000
+
 # Run the app
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "ocr_blog:create_app()"]
