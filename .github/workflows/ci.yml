@@ -29,7 +29,6 @@ jobs:
       run: |
         pytest  # Or whatever testing framework you use
 
-jobs:
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
