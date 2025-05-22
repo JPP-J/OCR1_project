@@ -35,7 +35,7 @@ jobs:
           # Debug: Show initial state
           echo "=== Initial State ==="
           docker ps -a
-          sudo netstat -tulpn | grep -E ':80|:8000' || true
+          sudo ss -tulpn | grep -E ':80|:8000' || true
           
           # Clean up disk space
           sudo apt-get clean
@@ -57,7 +57,7 @@ jobs:
           
           # Verify ports are free
           echo "=== Port Status After Cleanup ==="
-          sudo netstat -tulpn | grep -E ':80|:8000' || echo "Ports are free"
+          sudo ss -tulpn | grep -E ':80|:8000' || echo "Ports are free"
           
           # Login to Docker Hub
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -97,7 +97,7 @@ jobs:
           echo "=== Nginx Status ==="
           sudo systemctl status nginx
           echo "=== Final Port Status ==="
-          sudo netstat -tulpn | grep -E ':80|:8000' || true
+          sudo ss -tulpn | grep -E ':80|:8000' || true
           echo "=== Nginx Configuration ==="
           sudo nginx -T
         EOF
