@@ -16,7 +16,16 @@ jobs:
     - name: Set up SSH for EC2
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}                                                # Private IPv4 addresses
+        ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+    - name: Add SSH key to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Debug SSH connection
+      run: |
+        ssh -v -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} 'echo "SSH connection successful"'
 
     - name: Copy project files to EC2
       run: |
