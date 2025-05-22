@@ -16,30 +16,12 @@ jobs:
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
-        # Create the key file with proper formatting
-        cat << 'EOF' > ~/.ssh/ec2_key.pem
-        ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        EOF
-        # Remove any potential BOM or extra characters
-        sed -i '1s/^\xEF\xBB\xBF//' ~/.ssh/ec2_key.pem
-        # Ensure proper line endings
-        dos2unix ~/.ssh/ec2_key.pem
-        # Set proper permissions
+        # Save the private key
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ec2_key.pem
         chmod 600 ~/.ssh/ec2_key.pem
-        # Verify key format and show fingerprint
-        ssh-keygen -l -f ~/.ssh/ec2_key.pem || echo "Key format verification failed"
         # Start SSH agent
         eval $(ssh-agent -s)
-        # Add key to agent
         ssh-add ~/.ssh/ec2_key.pem
-        # List added keys
-        ssh-add -l
-        # Debug: Show first few lines of key (safely)
-        head -n 1 ~/.ssh/ec2_key.pem
-        tail -n 1 ~/.ssh/ec2_key.pem
-
-    - name: Install dos2unix
-      run: sudo apt-get install -y dos2unix
 
     - name: Add SSH key to known hosts
       run: |
@@ -47,7 +29,6 @@ jobs:
 
     - name: Debug SSH connection
       run: |
-        # Test SSH connection with explicit key
         ssh -i ~/.ssh/ec2_key.pem -v -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} 'echo "SSH connection successful"'
 
     - name: Copy project files to EC2
