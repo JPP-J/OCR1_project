@@ -1,0 +1,2 @@
+- name: Test SSH connection
+  run: ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} hostname
