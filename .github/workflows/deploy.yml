@@ -20,13 +20,13 @@ jobs:
 
     - name: Copy project files to EC2
       run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ec2-user@${{ secret.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/  # Public IPv4 address
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/  # Public IPv4 address
 
     - name: Deploy using Docker Compose on EC2
       env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@${{ secret.EC2_PUBLIC_IP_HOST }} << EOF  # Public IPv4 address
+        ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF  # Public IPv4 address
           cd ~/OCR1_project
           IMAGE_TAG=$IMAGE_TAG docker-compose pull
           IMAGE_TAG=$IMAGE_TAG docker-compose up -d
