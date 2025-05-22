@@ -23,9 +23,9 @@ jobs:
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Debug SSH connection
-      run: |
-        ssh -v -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} 'echo "SSH connection successful"'
+    # - name: Debug SSH connection
+    #   run: |
+    #     ssh -v -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} 'echo "SSH connection successful"'
 
     - name: Copy project files to EC2
       run: |
