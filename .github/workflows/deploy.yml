@@ -29,7 +29,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << 'EOF'
+        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
           cd ~/OCR1_project
           
           # Debug: Show initial state
@@ -62,9 +62,12 @@ jobs:
           # Login to Docker Hub
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
           
+          # Export IMAGE_TAG for docker-compose
+          export IMAGE_TAG=$IMAGE_TAG
+          
           # Pull and deploy
-          IMAGE_TAG=$IMAGE_TAG docker-compose pull
-          IMAGE_TAG=$IMAGE_TAG docker-compose up -d
+          docker-compose pull
+          docker-compose up -d
           
           # Update Nginx configuration
           cat << 'NGINX' | sudo tee /etc/nginx/sites-available/ocr1
