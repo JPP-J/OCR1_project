@@ -32,6 +32,9 @@ jobs:
         ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
           cd ~/OCR1_project
           
+          # Install net-tools for netstat
+          sudo apt-get update && sudo apt-get install -y net-tools
+          
           # Debug: Show initial state
           echo "=== Initial State ==="
           docker ps -a
