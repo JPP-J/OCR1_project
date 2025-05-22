@@ -30,7 +30,7 @@ jobs:
         pytest  # Or whatever testing framework you use
 
 jobs:
-  build-and-push::
+  build-and-push:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
