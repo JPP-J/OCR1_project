@@ -45,11 +45,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t jjp006/ocr1:${{ github.sha }} .
+        run: |
+          docker build -t jjp006/ocr1:${{ github.sha }} .
 
       - name: Push Docker image
-        run: docker push jjp006/ocr1:${{ github.sha }}
+        run: |
+          docker push jjp006/ocr1:${{ github.sha }}
 
       - name: Set output image tag
         id: vars
-        run: echo "::set-output name=tag::${{ github.sha }}"
+        run: |
+          echo "::set-output name=tag::${{ github.sha }}"
