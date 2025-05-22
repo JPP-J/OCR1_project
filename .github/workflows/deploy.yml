@@ -38,8 +38,13 @@ jobs:
           sudo rm -rf /var/lib/apt/lists/*
           sudo docker system prune -af
           
-          # Stop and remove existing containers
-          docker-compose down
+          # Stop any existing containers and remove them
+          docker-compose down --remove-orphans
+          
+          # Check if port 8000 is in use and kill the process if it is
+          if lsof -i :8000; then
+            sudo lsof -i :8000 | grep LISTEN | awk '{print $2}' | xargs -r sudo kill -9
+          fi
           
           # Login to Docker Hub
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
