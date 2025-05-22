@@ -13,15 +13,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ocr1_key.pem
+        chmod 600 ~/.ssh/ocr1_key.pem
+
     - name: Copy project files to EC2
       run: |
-        rsync -avz -e "ssh -i /home/ubuntu/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
+        rsync -avz -e "ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
 
     - name: Deploy using Docker Compose on EC2
       env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        ssh -i /home/ubuntu/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
+        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
           cd ~/OCR1_project
           IMAGE_TAG=$IMAGE_TAG docker-compose pull
           IMAGE_TAG=$IMAGE_TAG docker-compose up -d
