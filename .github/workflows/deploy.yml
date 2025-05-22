@@ -16,10 +16,16 @@ jobs:
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ec2_key.pem
+        # Ensure proper line endings and format for the key
+        echo -e "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ec2_key.pem
         chmod 600 ~/.ssh/ec2_key.pem
+        # Verify key format
+        ssh-keygen -l -f ~/.ssh/ec2_key.pem || echo "Key format verification failed"
+        # Start SSH agent and add key
         eval $(ssh-agent -s)
         ssh-add ~/.ssh/ec2_key.pem
+        # List added keys for debugging
+        ssh-add -l
 
     - name: Add SSH key to known hosts
       run: |
@@ -27,6 +33,7 @@ jobs:
 
     - name: Debug SSH connection
       run: |
+        # Test SSH connection with explicit key
         ssh -i ~/.ssh/ec2_key.pem -v -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP_HOST }} 'echo "SSH connection successful"'
 
     - name: Copy project files to EC2
