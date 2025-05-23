@@ -45,24 +45,15 @@ jobs:
         ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
           cd ~/OCR1_project
           
-          # Configure security group to allow HTTP traffic
-          echo "=== Configuring Security Group ==="
-          # Get the instance ID
-          INSTANCE_ID=\$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-          # Get the security group ID
-          SG_ID=\$(aws ec2 describe-instances --instance-ids \$INSTANCE_ID --query 'Reservations[0].Instances[0].SecurityGroups[0].GroupId' --output text)
-          # Add inbound rule for HTTP
-          aws ec2 authorize-security-group-ingress --group-id \$SG_ID --protocol tcp --port 80 --cidr 0.0.0.0/0 || true
-          
           # Debug: Show initial state
           echo "=== Initial State ==="
           docker ps -a
           sudo ss -tulpn | grep -E ':80|:8000' || true
           
-          # More thorough disk cleanup
-          echo "=== Cleaning up disk space ==="
-
-          # Remove unused Docker resources
+          # Clean up disk space
+          sudo apt-get clean
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/apt/lists/*
           docker system prune -af --volumes
           
           # Remove old Docker images
@@ -70,12 +61,6 @@ jobs:
 
           # Remove old Docker volumes
           docker volume prune -f
-          # Clean apt cache
-          sudo apt-get clean
-          sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/apt/lists/*
-
-          # Remove old log files
           sudo find /var/log -type f -name "*.gz" -delete
           sudo find /var/log -type f -name "*.old" -delete
           # Show disk space after cleanup
@@ -138,19 +123,6 @@ jobs:
           sudo ss -tulpn | grep -E ':80|:8000' || true
           echo "=== Nginx Configuration ==="
           sudo nginx -T
-          
-          # Network debugging
-          echo "=== Network Debugging ==="
-          echo "Testing local connection to nginx..."
-          curl -v http://localhost:80
-          echo "Testing local connection to application..."
-          curl -v http://localhost:8000
-          echo "Checking network interfaces..."
-          ip addr show
-          echo "Checking routing table..."
-          ip route show
-          echo "Checking firewall status..."
-          sudo ufw status
         EOF
 
     - name: Clean up SSH key
