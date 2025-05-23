@@ -21,7 +21,20 @@ jobs:
 
     - name: Copy project files to EC2
       run: |
-        rsync -avz -e "ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
+        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
+          # Clean up disk space before rsync
+          echo "=== Cleaning up disk space before rsync ==="
+          sudo apt-get clean
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/apt/lists/*
+          docker system prune -af --volumes
+          docker image prune -af
+          docker volume prune -f
+          sudo find /var/log -type f -name "*.gz" -delete
+          sudo find /var/log -type f -name "*.old" -delete
+          df -h
+        EOF
+        rsync -avz --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' -e "ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
 
     - name: Deploy using Docker Compose on EC2
       env:
