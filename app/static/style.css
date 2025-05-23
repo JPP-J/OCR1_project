@@ -97,8 +97,8 @@ img {
 .result-text {
     font-size: 15px;
     font-weight: regular;
-    color: #ff4800; /* Pink color */
+    color: #0d1e8e; /* Pink color */
     margin-top: 15px;
-    White-space: pre-wrap; /* Preserve whitespace */;
+    white-space: pre-wrap; /* Preserve whitespace */;
     font-family: monospace; /* optional, for better alignment */
 }
