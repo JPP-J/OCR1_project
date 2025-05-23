@@ -30,10 +30,9 @@ jobs:
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
           --comment "Cloning repo on EC2" \
-          --parameters 'commands=[
-            "echo \"=== Removing old OCR1_project directory ===\"",
-            "touch test-${{ github.sha }}-${{ github.repository }}.txt",
-
-            "echo \"=== FINISHED ===\"",
-            "ls -la ~/"
-          ]'
+          --parameters "commands=[
+            \"echo '=== Removing old OCR1_project directory ==='\",
+            \"touch test-${SHA}-${REPO}.txt\",
+            \"echo '=== FINISHED ==='\",
+            \"ls -la ~/\"
+          ]"
