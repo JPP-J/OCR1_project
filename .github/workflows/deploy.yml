@@ -24,6 +24,32 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Copy files to EC2
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=[
+            "echo \"=== Creating Project Directory ===\"",
+            "mkdir -p ~/OCR1_project",
+            "cd ~/OCR1_project",
+            "echo \"=== Creating docker-compose.yml ===\"",
+            "echo \"version: \\\"3\\\"\" > docker-compose.yml",
+            "echo \"services:\" >> docker-compose.yml",
+            "echo \"  web:\" >> docker-compose.yml",
+            "echo \"    image: jjp006/ocr1:${IMAGE_TAG}\" >> docker-compose.yml",
+            "echo \"    ports:\" >> docker-compose.yml",
+            "echo \"      - \\\"8000:8000\\\"\" >> docker-compose.yml",
+            "echo \"    environment:\" >> docker-compose.yml",
+            "echo \"      - FLASK_ENV=ocr_blog.flaskenv\" >> docker-compose.yml",
+            "echo \"    restart: always\" >> docker-compose.yml",
+            "echo \"=== Verifying Files ===\"",
+            "ls -la",
+            "cat docker-compose.yml"
+          ]'
+
     - name: Deploy using Docker Compose on EC2
       env:
         IMAGE_TAG: ${{ github.sha }}
@@ -35,16 +61,7 @@ jobs:
           --document-name "AWS-RunShellScript" \
           --parameters 'commands=[
             "echo \"=== Starting Deployment ===\"",
-            "echo \"=== Checking Directory ===\"",
-            "pwd",
-            "ls -la",
-            
-            "echo \"=== Creating Project Directory ===\"",
-            "mkdir -p ~/OCR1_project",
             "cd ~/OCR1_project",
-
-            "echo \"=== Checking Project Files ===\"",
-            "ls -la",
             "echo \"=== Stopping Existing Containers ===\"",
             "docker-compose down --remove-orphans",
             "echo \"=== Cleaning Up Docker Resources ===\"",
