@@ -99,4 +99,6 @@ img {
     font-weight: regular;
     color: #ff4800; /* Pink color */
     margin-top: 15px;
+    White-space: pre-wrap; /* Preserve whitespace */;
+    font-family: monospace; /* optional, for better alignment */
 }
