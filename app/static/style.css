@@ -96,9 +96,16 @@ img {
 /* Extracted text */
 .result-text {
     font-size: 15px;
-    font-weight: regular;
-    color: #0d1e8e; /* Pink color */
-    margin-top: 15px;
-    white-space: pre-wrap; /* Preserve whitespace */;
-    font-family: monospace; /* optional, for better alignment */
+    font-weight: normal;
+    color: #0d1e8e;
+    margin: 15px auto; /* Center horizontally with auto margins */
+    white-space: pre-wrap; /* Preserves both spaces and line breaks */
+    font-family: monospace; /* Better for code-like text */
+    line-height: 1.5; /* Adds space between lines */
+    padding: 15px; /* Adds space around the text */
+    background-color: #f8f9fa; /* Light background for better readability */
+    border: 1px solid #e9ecef; /* Subtle border */
+    border-radius: 4px; /* Rounded corners */
+    max-width: 80%; /* Takes up to 80% of parent width */
+    overflow-x: auto; /* Adds horizontal scroll if needed */
 }
