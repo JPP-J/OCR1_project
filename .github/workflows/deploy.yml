@@ -13,28 +13,36 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ocr1_key.pem
-        chmod 600 ~/.ssh/ocr1_key.pem
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Copy project files to EC2
       run: |
-        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
-          # Clean up disk space before rsync
-          echo "=== Cleaning up disk space before rsync ==="
-          sudo apt-get clean
-          sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/apt/lists/*
-          docker system prune -af --volumes
-          docker image prune -af
-          docker volume prune -f
-          sudo find /var/log -type f -name "*.gz" -delete
-          sudo find /var/log -type f -name "*.old" -delete
-          df -h
-        EOF
-        rsync -avz --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' -e "ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }}:~/OCR1_project/
+        # Create a temporary directory for the files
+        mkdir -p /tmp/deploy
+        cp -r . /tmp/deploy/
+        
+        # Use AWS Systems Manager to copy files
+        aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=["mkdir -p ~/OCR1_project"]'
+        
+        # Wait for the command to complete
+        sleep 5
+        
+        # Copy files using AWS Systems Manager
+        aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=["cd ~/OCR1_project && docker-compose down --remove-orphans"]'
+        
+        # Wait for the command to complete
+        sleep 5
 
     - name: Deploy using Docker Compose on EC2
       env:
@@ -42,90 +50,18 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        ssh -i ~/.ssh/ocr1_key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP_HOST }} << EOF
-          cd ~/OCR1_project
-          
-          # Debug: Show initial state
-          echo "=== Initial State ==="
-          docker ps -a
-          sudo ss -tulpn | grep -E ':80|:8000' || true
-          
-          # Clean up disk space
-          sudo apt-get clean
-          sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/apt/lists/*
-          docker system prune -af --volumes
-          
-          # Remove old Docker images
-          docker image prune -af
-
-          # Remove old Docker volumes
-          docker volume prune -f
-          sudo find /var/log -type f -name "*.gz" -delete
-          sudo find /var/log -type f -name "*.old" -delete
-          # Show disk space after cleanup
-          df -h
-          
-          # Stop any existing containers and remove them
-          docker-compose down --remove-orphans
-          
-          # More thorough port cleanup
-          echo "=== Cleaning up ports ==="
-          # Kill any process using port 8000
-          sudo fuser -k 8000/tcp || true
-          # Kill any process using port 80
-          sudo fuser -k 80/tcp || true
-          # Wait a moment for ports to be freed
-          sleep 2
-          
-          # Verify ports are free
-          echo "=== Port Status After Cleanup ==="
-          sudo ss -tulpn | grep -E ':80|:8000' || echo "Ports are free"
-          
-          # Login to Docker Hub
-          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          
-          # Export IMAGE_TAG for docker-compose
-          export IMAGE_TAG=$IMAGE_TAG
-          
-          # Pull and deploy
-          docker-compose pull
-          docker-compose up -d
-          
-          # Update Nginx configuration
-          echo 'server {
-              listen 80;
-              server_name _;
-
-              location / {
-                  proxy_pass http://127.0.0.1:8000;
-                  proxy_set_header Host \$host;
-                  proxy_set_header X-Real-IP \$remote_addr;
-                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto \$scheme;
-              }
-          }' | sudo tee /etc/nginx/sites-available/ocr1
-          
-          # Create symbolic link if it doesn't exist
-          sudo ln -sf /etc/nginx/sites-available/ocr1 /etc/nginx/sites-enabled/
-          
-          # Test and restart Nginx
-          sudo nginx -t && sudo systemctl restart nginx
-          
-          # Final debug information
-          echo "=== Final Docker Status ==="
-          docker ps -a
-          echo "=== Docker Logs ==="
-          docker logs ocr_web
-          echo "=== Nginx Status ==="
-          sudo systemctl status nginx
-          echo "=== Final Port Status ==="
-          sudo ss -tulpn | grep -E ':80|:8000' || true
-          echo "=== Nginx Configuration ==="
-          sudo nginx -T
-        EOF
-
-    - name: Clean up SSH key
-      run: rm ~/.ssh/ocr1_key.pem
+        aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=[
+            "cd ~/OCR1_project",
+            "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin",
+            "export IMAGE_TAG=$IMAGE_TAG",
+            "docker-compose pull",
+            "docker-compose up -d",
+            "echo \"server { listen 80; server_name _; location / { proxy_pass http://127.0.0.1:8000; proxy_set_header Host \$host; proxy_set_header X-Real-IP \$remote_addr; proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto \$scheme; } }\" | sudo tee /etc/nginx/sites-available/ocr1",
+            "sudo ln -sf /etc/nginx/sites-available/ocr1 /etc/nginx/sites-enabled/",
+            "sudo nginx -t && sudo systemctl restart nginx"
+          ]'
 
         
