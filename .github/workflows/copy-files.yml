@@ -36,13 +36,17 @@ jobs:
           --document-name "AWS-RunShellScript" \
           --parameters 'commands=[
             "echo \"=== Setting up Project Directory ===\"",
-            "rm -rf ~/OCR1_project",
-            "mkdir -p ~/OCR1_project",
+            "if [ ! -d ~/OCR1_project ]; then",
+            "  echo \"Creating project directory...\"",
+            "  mkdir -p ~/OCR1_project",
+            "fi",
             "cd ~/OCR1_project",
+
             "echo \"=== Copying docker-compose.yml ===\"",
             "cat > docker-compose.yml << '\''EOL'\''",
             "$(cat docker-compose.tmp.yml)",
             "EOL",
+            
             "echo \"=== Verifying Files ===\"",
             "if [ ! -f docker-compose.yml ]; then",
             "  echo \"Error: docker-compose.yml not created\"",
