@@ -24,38 +24,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Copy files to EC2
-      env:
-        IMAGE_TAG: ${{ github.sha }}
+    - name: Send Git clone command to EC2
       run: |
-        # Replace IMAGE_TAG in docker-compose.yml
-        sed "s/\${IMAGE_TAG:-latest}/$IMAGE_TAG/g" docker-compose.yml > docker-compose.tmp.yml
-        
         aws ssm send-command \
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
+          --comment "Cloning repo on EC2" \
           --parameters 'commands=[
-            "echo \"=== Setting up Project Directory ===\"",
-            "if [ ! -d ~/OCR1_project ]; then",
-            "  echo \"Creating project directory...\"",
-            "  mkdir -p ~/OCR1_project",
-            "fi",
+            "echo \"=== Removing old OCR1_project directory ===\"",
+            "rm -rf ~/OCR1_project",
+
+            "echo \"=== Cloning latest code ===\"",
+            "git clone https://github.com/${{ github.repository }} ~/OCR1_project",
             "cd ~/OCR1_project",
+            "git checkout ${{ github.sha }}",
 
-            "echo \"=== Copying docker-compose.yml ===\"",
-            "cat > docker-compose.yml << '\''EOL'\''",
-            "$(cat docker-compose.tmp.yml)",
-            "EOL",
-
-            "echo \"=== Verifying Files ===\"",
-            "if [ ! -f docker-compose.yml ]; then",
-            "  echo \"Error: docker-compose.yml not created\"",
-            "  exit 1",
-            "fi",
-            "echo \"=== File Contents ===\"",
-            "cat docker-compose.yml",
-            "echo \"=== File Permissions ===\"",
-            "ls -la docker-compose.yml",
-            "echo \"=== Directory Contents ===\"",
-            "ls -la"
-          ]' 
+            "echo \"=== Listing files after clone ===\"",
+            "ls -la ~/OCR1_project"
+          ]'
