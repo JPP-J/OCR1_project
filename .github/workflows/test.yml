@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  copy-files:
+  create-files:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
@@ -24,15 +24,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Send Git clone command to EC2
+    - name: Create files command to EC2
       run: |
+        SHA=${{ github.sha }}
+        REPO=${{ github.repository }}
+
+        # Escape slashes in REPO for safe filename
+        REPO_SAFE="${REPO//\//_}"
+
         aws ssm send-command \
-          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-          --document-name "AWS-RunShellScript" \
-          --comment "Cloning repo on EC2" \
-          --parameters "commands=[
+        --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+        --document-name "AWS-RunShellScript" \
+        --comment "Cloning repo on EC2" \
+        --parameters "commands=[
             \"echo '=== Removing old OCR1_project directory ==='\",
-            \"touch test-${SHA}-${REPO}.txt\",
+            \"touch test-${SHA}-${REPO_SAFE}.txt\",
             \"echo '=== FINISHED ==='\",
             \"ls -la ~/\"
-          ]"
+        ]"
