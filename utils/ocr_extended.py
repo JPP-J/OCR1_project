@@ -46,7 +46,7 @@ def OCR_extract_txt(link, show_im=False):
   image_url = link  # Replace with your image link
 
   # Step 1: Download the image from the URL
-  response = requests.get(image_url)
+  response = requests.get(image_url, timeout=10)  # Set a timeout for the request
   if response.status_code == 200:  # Check if the request was successful
       image_bytes = BytesIO(response.content)  # Convert response to bytes
 
