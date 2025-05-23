@@ -37,11 +37,27 @@ jobs:
           docker ps -a
           sudo ss -tulpn | grep -E ':80|:8000' || true
           
-          # Clean up disk space
+          # More thorough disk cleanup
+          echo "=== Cleaning up disk space ==="
+
+          # Remove unused Docker resources
+          docker system prune -af --volumes
+          
+          # Remove old Docker images
+          docker image prune -af
+
+          # Remove old Docker volumes
+          docker volume prune -f
+          # Clean apt cache
           sudo apt-get clean
           sudo apt-get autoremove -y
           sudo rm -rf /var/lib/apt/lists/*
-          sudo docker system prune -af
+
+          # Remove old log files
+          sudo find /var/log -type f -name "*.gz" -delete
+          sudo find /var/log -type f -name "*.old" -delete
+          # Show disk space after cleanup
+          df -h
           
           # Stop any existing containers and remove them
           docker-compose down --remove-orphans
