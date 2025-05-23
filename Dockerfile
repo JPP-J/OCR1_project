@@ -26,7 +26,7 @@ EXPOSE 8000
 CMD ["gunicorn", \
     "--bind", "0.0.0.0:8000", \
     "--workers", "2", \
-    "--timeout", "300", \
+    "--timeout", "60", \
     "--graceful-timeout", "120", \
     "--keep-alive", "5", \
     "--max-requests", "1000", \
