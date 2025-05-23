@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    image: jjp006/ocr1:${IMAGE_TAG}
+    image: jjp006/ocr1:${IMAGE_TAG:-latest}
     container_name: ocr_web
     ports:
       - "8000:8000"
