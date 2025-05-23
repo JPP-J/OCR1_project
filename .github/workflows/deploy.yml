@@ -24,30 +24,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Copy project files to EC2
-      run: |
-        # Create a temporary directory for the files
-        mkdir -p /tmp/deploy
-        cp -r . /tmp/deploy/
-        
-        # Use AWS Systems Manager to copy files
-        aws ssm send-command \
-          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-          --document-name "AWS-RunShellScript" \
-          --parameters 'commands=["mkdir -p ~/OCR1_project"]'
-        
-        # Wait for the command to complete
-        sleep 5
-        
-        # Copy files using AWS Systems Manager
-        aws ssm send-command \
-          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-          --document-name "AWS-RunShellScript" \
-          --parameters 'commands=["cd ~/OCR1_project && docker-compose down --remove-orphans"]'
-        
-        # Wait for the command to complete
-        sleep 5
-
     - name: Deploy using Docker Compose on EC2
       env:
         IMAGE_TAG: ${{ github.sha }}
@@ -64,7 +40,9 @@ jobs:
             "docker-compose up -d",
             "echo \"server { listen 80; server_name _; location / { proxy_pass http://127.0.0.1:8000; proxy_set_header Host \$host; proxy_set_header X-Real-IP \$remote_addr; proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto \$scheme; } }\" | sudo tee /etc/nginx/sites-available/ocr1",
             "sudo ln -sf /etc/nginx/sites-available/ocr1 /etc/nginx/sites-enabled/",
-            "sudo nginx -t && sudo systemctl restart nginx"
+            "sudo nginx -t && sudo systemctl restart nginx",
+            "sleep 10",
+            "curl -f http://localhost:8000 || exit 1"
           ]'
 
         
