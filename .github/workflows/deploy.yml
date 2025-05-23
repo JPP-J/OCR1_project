@@ -35,6 +35,8 @@ jobs:
           --document-name "AWS-RunShellScript" \
           --parameters 'commands=[
             "cd ~/OCR1_project",
+            "docker-compose down --remove-orphans",
+            "docker system prune -f",
             "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin",
             "docker-compose pull",
             "docker-compose up -d",
