@@ -24,15 +24,10 @@ EXPOSE 8000
 
 # Run the app with improved Gunicorn settings
 CMD ["gunicorn", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "2", \
-     "--timeout", "300", \
-     "--keep-alive", "5", \
-     "--max-requests", "1000", \
-     "--max-requests-jitter", "50", \
-     "--log-level", "info", \
-     "--worker-class", "sync", \
-     "--worker-connections", "1000", \
-     "--graceful-timeout", "120", \
-     "--preload", \
-     "ocr_blog:create_app()"]
+    "--bind",  "0.0.0.0:8000", \
+    "--workers",  "4" ,\ 
+    "--timeout",  "300" ,\ 
+    "--graceful-timeout",  "120" ,\
+    "ocr_blog:create_app" ]
+
+
