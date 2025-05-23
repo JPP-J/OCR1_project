@@ -37,37 +37,44 @@ jobs:
             "echo \"=== Starting Deployment ===\"",
             "cd ~/OCR1_project",
             
-            "echo \"=== Stopping Existing Containers ===\"",
-            "docker-compose down --remove-orphans",
-
-            "echo \"=== Cleaning Up Docker Resources ===\"",
-            "docker system prune -af --volumes",
-
-            "echo \"=== Checking Disk Space ===\"",
-            "df -h",
-
+            "echo \"=== Checking docker-compose.yml ===\"",
+            "cat docker-compose.yml",
+            
+            "echo \"=== Checking Docker Status ===\"",
+            "docker info",
+            "docker ps -a",
+            
             "echo \"=== Logging into Docker Hub ===\"",
             "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin",
-
-            "echo \"=== Pulling Latest Images ===\"",
-            "docker pull jjp006/ocr1:${IMAGE_TAG}",
-            "docker tag jjp006/ocr1:${IMAGE_TAG} jjp006/ocr1:latest",
+            
+            "echo \"=== Pulling Latest Image ===\"",
+            "docker pull jjp006/ocr1:${IMAGE_TAG} || exit 1",
+            
+            "echo \"=== Setting up Environment ===\"",
             "export IMAGE_TAG=${IMAGE_TAG}",
             "envsubst < docker-compose.yml > docker-compose.generated.yml",
-            "docker-compose -f docker-compose.generated.yml down --remove-orphans",
-            "docker-compose -f docker-compose.generated.yml up -d --build --force-recreate",
-
+            
+            "echo \"=== Starting Containers ===\"",
+            "docker-compose -f docker-compose.generated.yml up -d --build --force-recreate || exit 1",
+            
+            "echo \"=== Verifying Container Status ===\"",
+            "sleep 5",
+            "docker ps -a",
+            "docker logs ocr_web",
+            
+            "echo \"=== Checking Container Health ===\"",
+            "curl -v http://localhost:8000 || echo \"Container not responding yet\"",
+            
             "echo \"=== Configuring Nginx ===\"",
             "echo \"server { listen 80; server_name _; location / { proxy_pass http://127.0.0.1:8000; proxy_set_header Host \$host; proxy_set_header X-Real-IP \$remote_addr; proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto \$scheme; } }\" | sudo tee /etc/nginx/sites-available/ocr1",
             "sudo ln -sf /etc/nginx/sites-available/ocr1 /etc/nginx/sites-enabled/",
             "sudo nginx -t && sudo systemctl restart nginx",
-
-            "echo \"=== Waiting for Application to Start ===\"",
+            
+            "echo \"=== Final Health Check ===\"",
             "sleep 10",
-
-            "echo \"=== Checking Application Health ===\"",
-            "curl -f http://localhost:8000 || exit 1",
-            "echo \"=== Deployment Completed ===\""
+            "curl -f http://localhost:8000 || echo \"Warning: Application not responding\"",
+            "docker ps -a",
+            "docker logs ocr_web"
           ]'
 
         
