@@ -62,4 +62,4 @@ jobs:
           push: true
           tags: jjp006/ocr1:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
