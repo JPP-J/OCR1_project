@@ -1,0 +1,57 @@
+name: Copy Files to EC2
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  copy-files:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Copy files to EC2
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Replace IMAGE_TAG in docker-compose.yml
+        sed "s/\${IMAGE_TAG:-latest}/$IMAGE_TAG/g" docker-compose.yml > docker-compose.tmp.yml
+        
+        aws ssm send-command \
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters 'commands=[
+            "echo \"=== Setting up Project Directory ===\"",
+            "rm -rf ~/OCR1_project",
+            "mkdir -p ~/OCR1_project",
+            "cd ~/OCR1_project",
+            "echo \"=== Copying docker-compose.yml ===\"",
+            "cat > docker-compose.yml << '\''EOL'\''",
+            "$(cat docker-compose.tmp.yml)",
+            "EOL",
+            "echo \"=== Verifying Files ===\"",
+            "if [ ! -f docker-compose.yml ]; then",
+            "  echo \"Error: docker-compose.yml not created\"",
+            "  exit 1",
+            "fi",
+            "echo \"=== File Contents ===\"",
+            "cat docker-compose.yml",
+            "echo \"=== File Permissions ===\"",
+            "ls -la docker-compose.yml",
+            "echo \"=== Directory Contents ===\"",
+            "ls -la"
+          ]' 
