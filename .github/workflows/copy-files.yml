@@ -46,7 +46,7 @@ jobs:
             "cat > docker-compose.yml << '\''EOL'\''",
             "$(cat docker-compose.tmp.yml)",
             "EOL",
-            
+
             "echo \"=== Verifying Files ===\"",
             "if [ ! -f docker-compose.yml ]; then",
             "  echo \"Error: docker-compose.yml not created\"",
