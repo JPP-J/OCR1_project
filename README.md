@@ -12,3 +12,4 @@ This repo is home to the code that accompanies Jidapa's *OCR extract text from p
   - CI/CD: with GitHub Actions
   - Deployment: on EC2
 - [Hand on code demo OCR Notebook](https://github.com/JPP-J/OCR1_project/blob/07099f1426c312bfff9bc5192a9c85100ddd8a00/example_result.ipynb)
+- [Testing demo](https://drive.google.com/file/d/16GBxmXqUkDFMQe_NAO5veUjhiiq5qjxI/view?usp=sharing)
