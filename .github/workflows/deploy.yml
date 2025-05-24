@@ -39,8 +39,8 @@ jobs:
           --parameters 'commands=[
               "#!/bin/bash",
               "cd /home/ubuntu || cd /tmp || exit 1",
-              \"export HOME=/home/ubuntu \",
-              \"git config --global --add safe.directory /home/ubuntu/OCR1_project\",
+              "export HOME=/home/ubuntu \",
+              "git config --global --add safe.directory /home/ubuntu/OCR1_project",
               "echo \"=== Starting deployment ===\"",
               "cd /home/ubuntu/OCR1_project",
               "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin",
