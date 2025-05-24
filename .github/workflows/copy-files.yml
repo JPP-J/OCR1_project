@@ -42,9 +42,9 @@ jobs:
               "git clone https://github.com/${{ github.repository }} ~/OCR1_project",
               "cd ~/OCR1_project",
               "git checkout ${{ github.sha }}",
-              "echo '=== Listing files after clone ==='",
+              "echo \"=== Listing files after clone ===\"",
               "ls -la ~/OCR1_project",
-          ]'
+          ]' \
           --query 'Command.CommandId' \
           --output text)
         
