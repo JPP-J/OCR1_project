@@ -32,13 +32,10 @@ CMD ["gunicorn", \
     "--max-requests", "1000", \
     "--max-requests-jitter", "50", \
     "--worker-class", "gevent", \
-    "--worker-connections", "1000", \
     "--preload", \
     "--log-level", "info", \
     "--access-logfile", "-", \
     "--error-logfile", "-", \
-    "-k", \
-    "gevent", \
-    "ocr_blog:create_app"]
+    "ocr_blog:app"]
 
 
