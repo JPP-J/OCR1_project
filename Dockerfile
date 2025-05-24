@@ -36,8 +36,6 @@ CMD ["gunicorn", \
     "--log-level", "info", \
     "--access-logfile", "-", \
     "--error-logfile", "-", \
-    "-k", \
-    "gevent", \
-    "ocr_blog:create_app"]
+    "ocr_blog:app"]
 
 
