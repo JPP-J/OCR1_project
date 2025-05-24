@@ -51,7 +51,7 @@ jobs:
               \"docker-compose -f docker-compose.generated.yml down --remove-orphans\",
               \"docker-compose -f docker-compose.generated.yml up -d --build --force-recreate\",
               \"docker ps -a\",
-              \"docker logs ocr_web\",
+              \"docker logs ocr_web \",
               \"sudo ss -tulpn | grep -E ':8000|:80' \",
               \"curl -f http://localhost:8000 || echo 'App not ready yet'\",
               \"sudo systemctl restart nginx\",
