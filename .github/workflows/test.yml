@@ -37,6 +37,7 @@ jobs:
           --comment "Creating test files on EC2" \
           --parameters "commands=[
               \"#!/bin/bash\",
+              \"pwd\",
               \"cd /home/ubuntu\",
               \"echo '=== Starting execution ==='\",
               \"pwd\",
@@ -52,7 +53,7 @@ jobs:
         echo "Command ID: $COMMAND_ID"
         
         # Wait for completion (timeout after 60 seconds)
-        echo "Waiting for command to complete..."
+        echo -e "Waiting for command to complete...\n"
         aws ssm wait command-executed \
           --command-id "$COMMAND_ID" \
           --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
