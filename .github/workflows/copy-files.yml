@@ -24,7 +24,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Send Git clone command to EC2
+    - name: Send Git clone-pull command to EC2
       run: |
         echo "Sending command to instance: ${{ secrets.EC2_INSTANCE_ID }}"
 
@@ -38,13 +38,13 @@ jobs:
               \"cd /home/ubuntu\",
               \"echo '=== Starting deployment ===' \",
               \"# Check if repo exists, if not clone it first\",
-              \"if [ ! -d /OCR1_project ]; then\",
+              \"if [ ! -d /home/ubuntu/OCR1_project ]; then\",
               \"  echo 'Repository not found, cloning for first time...'\",
               \"  git clone https://github.com/${{ github.repository }} ~/OCR1_project\",
               \"else\",
               \"  echo 'Repository exists, updating...'\",
               \"fi\",
-              \"cd /OCR1_project\",
+              \"cd /home/ubuntu/OCR1_project\",
               \"echo '=== Fetching latest changes ==='\",
               \"git fetch origin\",
               \"echo '=== Resetting to specific commit: ${{ github.sha }} ==='\",
@@ -54,7 +54,7 @@ jobs:
               \"echo '=== Current commit info ==='\",
               \"git log -1 --oneline\",
               \"echo '=== Listing project files ==='\",
-              \"ls -la ~/OCR1_project\"
+              \"ls -la /home/ubuntu/OCR1_project\"
             ]" \
           --query 'Command.CommandId' \
           --output text)
