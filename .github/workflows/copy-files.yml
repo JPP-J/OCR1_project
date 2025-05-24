@@ -40,29 +40,6 @@ jobs:
           --parameters "commands=[
               \"#!/bin/bash\",
               \"cd /home/ubuntu || exit 1\",
-              \"echo '=== Starting deployment ===' \",
-              \"git config --global --add safe.directory /home/ubuntu\"
-              \"# Check if repo exists, if not clone it first\",
-              \"if [ ! -d /home/ubuntu/OCR1_project ]; then\",
-              \"  echo 'Repository not found, cloning for first time...'\",
-              \"  git clone https://${{ secrets.PAT_GITHUB }}@github.com/${{ github.repository }} /home/ubuntu/OCR1_project\",
-              \"else\",
-              \"  echo 'Repository exists, updating...'\",
-              \"fi\",
-              \"cd /home/ubuntu/OCR1_project || exit 1\",
-              \"echo '=== Fetching latest changes ==='\",
-              \"git fetch origin\",
-              \"echo '=== Resetting to specific commit: ${{ github.sha }} ==='\",
-              \"git reset --hard ${{ github.sha }}\",
-              \"echo '=== Cleaning untracked files ==='\",
-              \"git clean -fd\",
-              \"echo '=== Current commit info ==='\",
-              \"git log -1 --oneline\",
-              \"echo '=== Listing project files ==='\",
-              \"ls -la /home/ubuntu/OCR1_project\"
-            ]" \
-              \"#!/bin/bash\",
-              \"cd /home/ubuntu || exit 1\",
               \"echo '=== Starting deployment ==='\",
               \"git config --global --add safe.directory /home/ubuntu\",
               \"# Check if repo exists, if not clone it first\",
@@ -84,8 +61,6 @@ jobs:
               \"echo '=== Listing project files ==='\",
               \"ls -la /home/ubuntu/OCR1_project\"
             ]" \
-
-
           --query 'Command.CommandId' \
           --output text)
       
