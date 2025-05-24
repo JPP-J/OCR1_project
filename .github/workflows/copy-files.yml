@@ -39,9 +39,10 @@ jobs:
           --comment "Cloning repo on EC2" \
           --parameters "commands=[
               \"#!/bin/bash\",
-              \"cd /home/ubuntu || exit 1\",
+              \"cd /home/ubuntu || cd /tmp || exit 1\",
+              \"export HOME=/home/ubuntu \",
               \"echo '=== Starting deployment ==='\",
-              \"git config --global --add safe.directory /home/ubuntu\",
+              \"git config --global --add safe.directory /home/ubuntu/OCR1_project\",
               \"# Check if repo exists, if not clone it first\",
               \"if [ ! -d /home/ubuntu/OCR1_project ]; then\",
               \"  echo 'Repository not found, cloning for first time...'\",
@@ -52,8 +53,8 @@ jobs:
               \"cd /home/ubuntu/OCR1_project || exit 1\",
               \"echo '=== Fetching latest changes ==='\",
               \"git fetch origin\",
-              \"echo '=== Resetting to specific commit: <commit_sha> ==='\",
-              \"git reset --hard <commit_sha>\",
+              \"echo '=== Resetting to specific commit: ${COMMIT_SHA} ==='\",
+              \"git reset --hard ${COMMIT_SHA}\",
               \"echo '=== Cleaning untracked files ==='\",
               \"git clean -fd\",
               \"echo '=== Current commit info ==='\",
