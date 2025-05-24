@@ -33,18 +33,18 @@ jobs:
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
           --comment "Cloning repo on EC2" \
-          --parameters 'commands=[
-              "#!/bin/bash",
-              "cd /home/ubuntu",
-              "echo '=== Setting up OCR1_project directory ==='",
-              "if [ -d ~/OCR1_project ]; then echo 'Directory exists, removing old version...'; rm -rf ~/OCR1_project; fi",
-              "echo '=== Cloning latest code ==='",
-              "git clone https://github.com/${{ github.repository }} ~/OCR1_project",
-              "cd ~/OCR1_project",
-              "git checkout ${{ github.sha }}",
-              "echo \"=== Listing files after clone ===\"",
-              "ls -la ~/OCR1_project",
-          ]' \
+          --parameters "commands=[
+              \"#!/bin/bash\",
+              \"cd /home/ubuntu\",
+              \"echo '=== Setting up OCR1_project directory ==='\",
+              \"if [ -d ~/OCR1_project ]; then echo 'Directory exists, removing old version...'; rm -rf ~/OCR1_project; fi\",
+              \"echo '=== Cloning latest code ==='\",
+              \"git clone https://github.com/${{ github.repository }} ~/OCR1_project\",
+              \"cd ~/OCR1_project\",
+              \"git checkout ${{ github.sha }}\",
+              \"echo '=== Listing files after clone ==='\",
+              \"ls -la ~/OCR1_project\"
+            ]" \
           --query 'Command.CommandId' \
           --output text)
         

@@ -46,7 +46,7 @@ jobs:
               \"ls -la test-*.txt\",
               \"echo '=== FINISHED ==='\",
               \"whoami\"
-          ]" \
+            ]" \
           --query 'Command.CommandId' \
           --output text)
         

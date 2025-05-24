@@ -52,8 +52,7 @@ jobs:
               "docker logs ocr_web",
               "curl -f http://localhost:8000 || echo \"App not ready yet\"",
               "sudo systemctl restart nginx"
-            ]'
-        
+            ]' \
         --query 'Command.CommandId' \
         --output text)
         
