@@ -70,6 +70,11 @@ jobs:
               \"echo '=== Starting new containers ==='\",
               \"docker-compose -f docker-compose.generated.yml up -d --build --force-recreate\",
               
+              \"echo '=== Debugging WSGI setup ==='\",
+              \"docker exec ocr_web ls -la /app/ | head -10\",
+              \"docker exec ocr_web cat /app/gevent_patch.py 2>/dev/null || echo 'gevent_patch.py not found'\",
+              \"docker exec ocr_web python -c 'import gevent_patch; print(dir(gevent_patch))' 2>/dev/null || echo 'Cannot import gevent_patch'\",
+              
               \"echo '=== Waiting for application to start ==='\",
               \"sleep 30\",
               
