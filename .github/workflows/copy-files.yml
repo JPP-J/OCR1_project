@@ -25,6 +25,10 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Send Git clone-pull command to EC2
+      env: 
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+          COMMIT_SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
       run: |
         echo "Sending command to instance: ${{ secrets.EC2_INSTANCE_ID }}"
 
@@ -35,16 +39,17 @@ jobs:
           --comment "Cloning repo on EC2" \
           --parameters "commands=[
               \"#!/bin/bash\",
-              \"cd /home/ubuntu\",
+              \"cd /home/ubuntu || exit 1\",
               \"echo '=== Starting deployment ===' \",
+              \"git config --global --add safe.directory /home/ubuntu\"
               \"# Check if repo exists, if not clone it first\",
               \"if [ ! -d /home/ubuntu/OCR1_project ]; then\",
               \"  echo 'Repository not found, cloning for first time...'\",
-              \"  git clone https://github.com/${{ github.repository }} ~/OCR1_project\",
+              \"  git clone https://${{ secrets.PAT_GITHUB }}@github.com/${{ github.repository }} /home/ubuntu/OCR1_project\",
               \"else\",
               \"  echo 'Repository exists, updating...'\",
               \"fi\",
-              \"cd /home/ubuntu/OCR1_project\",
+              \"cd /home/ubuntu/OCR1_project || exit 1\",
               \"echo '=== Fetching latest changes ==='\",
               \"git fetch origin\",
               \"echo '=== Resetting to specific commit: ${{ github.sha }} ==='\",
@@ -56,6 +61,31 @@ jobs:
               \"echo '=== Listing project files ==='\",
               \"ls -la /home/ubuntu/OCR1_project\"
             ]" \
+              \"#!/bin/bash\",
+              \"cd /home/ubuntu || exit 1\",
+              \"echo '=== Starting deployment ==='\",
+              \"git config --global --add safe.directory /home/ubuntu\",
+              \"# Check if repo exists, if not clone it first\",
+              \"if [ ! -d /home/ubuntu/OCR1_project ]; then\",
+              \"  echo 'Repository not found, cloning for first time...'\",
+              \"  git clone https://${GITHUB_TOKEN}@github.com/${REPO} /home/ubuntu/OCR1_project\",
+              \"else\",
+              \"  echo 'Repository exists, updating...'\",
+              \"fi\",
+              \"cd /home/ubuntu/OCR1_project || exit 1\",
+              \"echo '=== Fetching latest changes ==='\",
+              \"git fetch origin\",
+              \"echo '=== Resetting to specific commit: <commit_sha> ==='\",
+              \"git reset --hard <commit_sha>\",
+              \"echo '=== Cleaning untracked files ==='\",
+              \"git clean -fd\",
+              \"echo '=== Current commit info ==='\",
+              \"git log -1 --oneline\",
+              \"echo '=== Listing project files ==='\",
+              \"ls -la /home/ubuntu/OCR1_project\"
+            ]" \
+
+
           --query 'Command.CommandId' \
           --output text)
       
