@@ -36,7 +36,7 @@ jobs:
           --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
           --document-name "AWS-RunShellScript" \
           --comment "Deploy on EC2" \
-          --parameters 'commands=[
+          --parameters "commands=[
               \"#!/bin/bash\",
               \"cd /home/ubuntu || cd /tmp || exit 1\",
               \"export HOME=/home/ubuntu\",
@@ -54,7 +54,7 @@ jobs:
               \"docker logs ocr_web\",
               \"curl -f http://localhost:8000 || echo 'App not ready yet'\",
               \"sudo systemctl restart nginx\",
-            ]' \
+            ]" \
         --query 'Command.CommandId' \
         --output text)
         
