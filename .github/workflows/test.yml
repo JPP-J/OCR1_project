@@ -37,7 +37,7 @@ jobs:
           --comment "Creating test files on EC2" \
           --parameters "commands=[
               \"#!/bin/bash\",
-              \"cd /home/ec2-user\",
+              \"cd /home/ubuntu\",
               \"echo '=== Starting execution ==='\",
               \"pwd\",
               \"touch test-${SHA}-${REPO_SAFE}.txt\",
