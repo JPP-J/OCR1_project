@@ -37,23 +37,23 @@ jobs:
           --document-name "AWS-RunShellScript" \
           --comment "Deploy on EC2" \
           --parameters 'commands=[
-              "\#!/bin/bash\",
-              "\cd /home/ubuntu || cd /tmp || exit 1\",
-              "\export HOME=/home/ubuntu \",
-              "\git config --global --add safe.directory /home/ubuntu/OCR1_project\",
-              "\echo '=== Starting deployment ==='\",
-              "\cd /home/ubuntu/OCR1_project\",
-              "\echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin\",
-              "\docker pull jjp006/ocr1:${IMAGE_TAG}\",
-              "\docker tag jjp006/ocr1:${IMAGE_TAG} jjp006/ocr1:latest\",
-              "\export IMAGE_TAG=${IMAGE_TAG}\",
-              "\envsubst < docker-compose.yml > docker-compose.generated.yml\",
-              "\docker-compose -f docker-compose.generated.yml down --remove-orphans\",
-              "\docker-compose -f docker-compose.generated.yml up -d --build --force-recreate\",
-              "\docker ps -a\",
-              "\docker logs ocr_web\",
-              "\curl -f http://localhost:8000 || echo \"App not ready yet\" \",
-              "\sudo systemctl restart nginx\"
+              \"#!/bin/bash\",
+              \"cd /home/ubuntu || cd /tmp || exit 1\",
+              \"export HOME=/home/ubuntu\",
+              \"git config --global --add safe.directory /home/ubuntu/OCR1_project\",
+              \"echo '=== Starting deployment ==='\",
+              \"cd /home/ubuntu/OCR1_project\",
+              \"echo '$DOCKER_PASSWORD' | docker login -u '$DOCKER_USERNAME' --password-stdin\",
+              \"docker pull jjp006/ocr1:${IMAGE_TAG}\",
+              \"docker tag jjp006/ocr1:${IMAGE_TAG} jjp006/ocr1:latest\",
+              \"export IMAGE_TAG=${IMAGE_TAG}\",
+              \"envsubst < docker-compose.yml > docker-compose.generated.yml\",
+              \"docker-compose -f docker-compose.generated.yml down --remove-orphans\",
+              \"docker-compose -f docker-compose.generated.yml up -d --build --force-recreate\",
+              \"docker ps -a\",
+              \"docker logs ocr_web\",
+              \"curl -f http://localhost:8000 || echo 'App not ready yet'\",
+              \"sudo systemctl restart nginx\",
             ]' \
         --query 'Command.CommandId' \
         --output text)
