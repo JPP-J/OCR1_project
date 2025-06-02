@@ -1,4 +1,7 @@
 # OCR extract text from picture Project
+![Last Commit](https://img.shields.io/github/last-commit/JPP-J/OCR1_project?style=flat-square)
+![Jupyter Notebook](https://img.shields.io/badge/jupyter%20notebook-97.8%25-blue?style=flat-square)
+![Languages](https://img.shields.io/github/languages/count/JPP-J/OCR1_project?style=flat-square)
 
 This repo is home to the code that accompanies Jidapa's *OCR extract text from picture Project* :
 
@@ -11,5 +14,5 @@ This repo is home to the code that accompanies Jidapa's *OCR extract text from p
   - Containers: Dockerized with `docker-compose`
   - CI/CD: with GitHub Actions
   - Deployment: on EC2
-- [Hand on code demo OCR Notebook](https://github.com/JPP-J/OCR1_project/blob/07099f1426c312bfff9bc5192a9c85100ddd8a00/example_result.ipynb)
+- [Hand on code demo OCR Notebook](example_result.ipynb)
 - [Testing demo](https://drive.google.com/file/d/16GBxmXqUkDFMQe_NAO5veUjhiiq5qjxI/view?usp=sharing)
