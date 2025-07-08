@@ -18,7 +18,7 @@ This repository contains the complete codebase for Jidapa's *OCR extract text fr
 
 - **Resources**:
   - Example Result Demo notebook: [Notebook](example_result.ipynb)
-  - Testing demo video: [Google Drive Link](https://drive.google.com/file/d/16GBxmXqUkDFMQe_NAO5veUjhiiq5qjxI/view?usp=sharing)
+  - Testing demo video: [Google Drive Link](https://drive.google.com/file/d/16GBxmXqUkDFMQe_NAO5veUjhiiq5qjxI/preview)
 
 This repo serves as a full end-to-end solution—from OCR extraction and API service to cloud deployment and continuous integration.
 
